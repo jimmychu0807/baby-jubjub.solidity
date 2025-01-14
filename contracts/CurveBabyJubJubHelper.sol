@@ -1,7 +1,7 @@
-pragma solidity ^0.4.24;
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.23 <=0.8.29;
 
 import "./CurveBabyJubJub.sol";
-
 
 contract CurveBabyJubJubHelper {
     function pointAdd(uint256 _x1, uint256 _y1, uint256 _x2, uint256 _y2) public view returns (uint256 x3, uint256 y3) {

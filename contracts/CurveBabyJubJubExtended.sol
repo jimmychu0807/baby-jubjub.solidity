@@ -1,5 +1,5 @@
-pragma solidity ^0.4.24;
-
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.23 <=0.8.29;
 
 /**
  * @dev Baby jubjub curve using extended twisted edwards coordinate points
@@ -23,7 +23,7 @@ library CurveBabyJubJubExtended {
      * t3 = (y1y2 - ax1x2) * (x1y2 + y1x2)
      * z3 = (z1z2 - dt1t2) * (z1z2 + dt1t2)
      */
-    function pointAdd(uint256[4] _p1, uint256[4] _p2) internal pure returns (uint256[4] p3) {
+    function pointAdd(uint256[4] memory _p1, uint256[4] memory _p2) internal pure returns (uint256[4] memory p3) {
         if (_p1[0] == 0 && _p1[1] == 0 && _p1[2] == 0 && _p1[3] == 0) {
             return _p2;
         }
@@ -68,12 +68,12 @@ library CurveBabyJubJubExtended {
      * z3 = (z1z2 - dt1t2) * (z1z2 + dt1t2)
      */
     function pointAddASM(
-        uint256[4] _p1,
-        uint256[4] _p2
+        uint256[4] memory _p1,
+        uint256[4] memory _p2
     ) 
         internal
         pure
-        returns (uint256[4] p3)
+        returns (uint256[4] memory p3)
     {
         if (_p1[0] == 0 && _p1[1] == 0 && _p1[2] == 0 && _p1[3] == 0) {
             return _p2;
@@ -137,7 +137,7 @@ library CurveBabyJubJubExtended {
      * @dev Double a etec point on baby jubjub curve
      * Doubling can be performed with the same formula as addition
      */
-    function pointDouble(uint256[4] _p) internal pure returns (uint256[4] p2) {
+    function pointDouble(uint256[4] memory _p) internal pure returns (uint256[4] memory p2) {
         p2 = pointAdd(_p, _p);
     }
 
@@ -145,14 +145,14 @@ library CurveBabyJubJubExtended {
      * @dev Double a etec point on baby jubjub curve
      * Doubling can be performed with the same formula as addition
      */
-    function pointDoubleASM(uint256[4] _p) internal pure returns (uint256[4] p2) {
+    function pointDoubleASM(uint256[4] memory _p) internal pure returns (uint256[4] memory p2) {
         p2 = pointAddASM(_p, _p);
     }
 
     /**
      * @dev Double a etec point using dedicated double algorithm
      */
-    function pointDoubleDedicated(uint256[4] _p) internal pure returns (uint256[4] p2) {
+    function pointDoubleDedicated(uint256[4] memory _p) internal pure returns (uint256[4] memory p2) {
         uint256[8] memory intermediates;
         // A <- x1 * x1
         intermediates[0] = mulmod(_p[0], _p[0], Q);
@@ -248,7 +248,7 @@ library CurveBabyJubJubExtended {
      * @dev Multiply a etec point on baby jubjub curve by a scalar
      * Use the double and add algorithm
      */
-    function pointMul(uint256[4] _p, uint256 _d) internal pure returns (uint256[4] p) {
+    function pointMul(uint256[4] memory _p, uint256 _d) internal pure returns (uint256[4] memory p) {
         uint256 remaining = _d;
 
         uint256[4] memory pp = _p;
@@ -304,7 +304,7 @@ library CurveBabyJubJubExtended {
             mstore(add(memPtr, 0xa0), _m) // Modulus _m
 
             // The bigModExp precompile is at 0x05
-            let success := staticcall(gas, 0x05, memPtr, 0xc0, memPtr, 0x20)
+            let success := staticcall(gas(), 0x05, memPtr, 0xc0, memPtr, 0x20)
             switch success
             case 0 {
                 revert(0x0, 0x0)
@@ -317,7 +317,7 @@ library CurveBabyJubJubExtended {
     /**
      * @dev Convert etec point to affine point
      */
-    function etec2point(uint256[4] _etec) internal view returns (uint256[2] p) {
+    function etec2point(uint256[4] calldata _etec) internal view returns (uint256[2] memory p) {
         uint256 invZ = inverse(_etec[3]);
         p[0] = mulmod(_etec[0], invZ, Q);
         p[1] = mulmod(_etec[1], invZ, Q);
@@ -326,7 +326,7 @@ library CurveBabyJubJubExtended {
     /**
      * @dev Convert affine point to etec point
      */
-    function point2etec(uint256[2] _p) internal pure returns (uint256[4] etec) {
+    function point2etec(uint256[2] calldata _p) internal pure returns (uint256[4] memory etec) {
         etec[0] = _p[0];
         etec[1] = _p[1];
         etec[2] = mulmod(_p[0], _p[1], Q);

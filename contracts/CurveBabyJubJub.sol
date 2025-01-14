@@ -1,5 +1,5 @@
-pragma solidity ^0.4.24;
-
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.23 <=0.8.29;
 
 library CurveBabyJubJub {
     // Curve parameters
@@ -10,6 +10,13 @@ library CurveBabyJubJub {
     uint256 public constant D = 0x292F8;
     // Prime Q = 21888242871839275222246405745257275088548364400416034343698204186575808495617
     uint256 public constant Q = 0x30644E72E131A029B85045B68181585D2833E84879B9709143E1F593F0000001;
+
+    // Base8 point
+    //   ref: https://github.com/privacy-scaling-explorations/zk-kit/blob/31c83b644857ed30983120baeff912f69a11f2e9/packages/baby-jubjub/src/baby-jubjub.ts#L19-L22
+    uint256 public constant Base8x =
+        5299619240641551281634865583518297030282874472190772894086521144482721001553;
+    uint256 public constant Base8y =
+        16950150798460657717958625567821834550301663161624707787222815936182638968203;
 
     /**
      * @dev Add 2 points on baby jubjub curve
@@ -121,7 +128,7 @@ library CurveBabyJubJub {
             mstore(add(memPtr, 0xa0), _m) // Modulus _m
 
             // The bigModExp precompile is at 0x05
-            let success := staticcall(gas, 0x05, memPtr, 0xc0, memPtr, 0x20)
+            let success := staticcall(gas(), 0x05, memPtr, 0xc0, memPtr, 0x20)
             switch success
             case 0 {
                 revert(0x0, 0x0)
